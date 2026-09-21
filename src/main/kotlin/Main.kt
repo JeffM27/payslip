@@ -3,10 +3,10 @@ import kotlin.toBigDecimal
 
 fun main() {
     println("Pay Slip Printer")
-    printSlip()
+    getPayslip()
 }
 
-fun printSlip() {
+fun getPayslip() {
     val employeeId = 6143
     val firstName = "Joe"
     val surname = "Soap"
@@ -18,26 +18,36 @@ fun printSlip() {
     val bonusPercentage = 4.5
     val taxRatePercentage = 23.5
     val pensionContribution = 6.7
+    val normalPay = calculateNormalPay(hours, rate)
+    val overtimePay = calculateOvertimePay(overtimeHours, rate)
     val grossPay = calculateGrossPay(hours, rate, overtimeHours)
+    val bonusPay = calculateBonus(grossPay, bonusPercentage)
+    val taxDeduction = calculateTax(grossPay, taxRatePercentage)
+    val pensionDeduction = calculatePension(grossPay, pensionContribution)
+    val netPay = calculateNetPay(grossPay, taxRatePercentage, pensionContribution, bonusPercentage)
 
-    println("=============================")
-    println("\t\t\tPAYSLIP")
-    println("=============================")
-    println("Employee ID\t\t : $employeeId")
-    getFullName(firstName, surname, employeeId)
-    println("Job / Dept\t\t : $jobTitle ($department)")
-    println("-----------------------------")
-    println("Hourly Rate\t\t : $rate")
-    println("Hours Worked\t : $hours")
-    println("Overtime Hours\t : $overtimeHours")
-    println("-----------------------------")
-    println("Normal Pay\t\t : €" + calculateNormalPay(hours, rate))
-    println("Overtime Pay\t : €" + calculateOvertimePay(overtimeHours, rate))
-    println("Gross Pay\t\t : €${calculateGrossPay(hours, rate, overtimeHours)}")
-    println("Bonus\t\t\t : €${calculateBonus(grossPay, bonusPercentage)}")
-    println("Tax Deduction\t : €${calculateTax(grossPay, taxRatePercentage)}")
-    println("Pension Deduction: €${calculatePension(grossPay, pensionContribution)}")
-    println("Net Pay\t\t\t : €${calculateNetPay(grossPay, taxRatePercentage, pensionContribution, bonusPercentage)}")
+    val payslip = """
+    =============================
+    \t\t\tPAYSLIP
+    =============================
+    Employee ID      : $employeeId
+    Employee		 : ${firstName.uppercase()} ${surname.uppercase()} ($employeeId)
+    Job / Dept       : $jobTitle ($department)
+    -----------------------------
+    Hourly Rate      : $rate
+    Hours Worked     : $hours
+    Overtime Hours   : $overtimeHours
+    -----------------------------
+    Normal Pay       : ${money(normalPay)}
+    Overtime Pay     : ${money(overtimePay)}
+    Gross Pay        : ${money(grossPay)}
+    Bonus            : ${money(bonusPay)}
+    Tax Deduction    : ${money(taxDeduction)}
+    Pension Deduction: ${money(pensionDeduction)}
+    Net Pay          : ${money(netPay)}
+    """.trimIndent()
+
+    println(payslip)
 }
 
 // Where I researched the rounding: https://www.baeldung.com/kotlin/round-numbers
@@ -59,3 +69,5 @@ fun calculateTax(a: Double, b: Double) = (a*(b/100)).toBigDecimal().setScale(2, 
 fun calculatePension(a: Double, b: Double) = (a*(b/100)).toBigDecimal().setScale(2, RoundingMode.UP)
 
 fun calculateNetPay(a: Double, b: Double, c: Double, d: Double) = (a-(a*(b/100))-a*(c/100)+(a*(d/100))).toBigDecimal().setScale(2, RoundingMode.UP)
+
+fun money(value: Any) = "€%.2f".format(value)
