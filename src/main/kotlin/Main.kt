@@ -2,8 +2,36 @@ import java.math.RoundingMode
 import kotlin.toBigDecimal
 
 fun main() {
-    println("Pay Slip Printer")
-    getPayslip()
+    val rate = 26.87
+    val hours = 39
+    val overtimeHours = 4
+    val bonusPercentage = 4.5
+    val taxRatePercentage = 23.5
+    val pensionContribution = 6.7
+    val grossPay = calculateGrossPay(hours, rate, overtimeHours)
+    val bonusPay = calculateBonus(grossPay, bonusPercentage)
+    val pensionDeduction = calculatePension(grossPay, pensionContribution)
+    val netPay = calculateNetPay(grossPay, taxRatePercentage, pensionContribution, bonusPercentage)
+
+    var input: Int
+
+    do {
+        input = menu()
+        when(input) {
+            1 -> println("Hourly Rate: $rate")
+            2 -> println("Hours Worked: $hours")
+            3 -> println("Overtime Hours: $overtimeHours")
+            4 -> println("Bonus: $bonusPay")
+            5 -> println("Tax Rate: $taxRatePercentage")
+            6 -> println("Pension: $pensionDeduction")
+            7 -> println("Gross Pay: $grossPay")
+            8 -> println("Net Pay: $netPay")
+            9 -> getPayslip()
+            -1 -> println("Exiting App")
+            else -> println("Invalid Option")
+        }
+        println()
+    } while (input != -1)
 }
 
 fun getPayslip() {
@@ -71,3 +99,25 @@ fun calculatePension(a: Double, b: Double) = (a*(b/100)).toBigDecimal().setScale
 fun calculateNetPay(a: Double, b: Double, c: Double, d: Double) = (a-(a*(b/100))-a*(c/100)+(a*(d/100))).toBigDecimal().setScale(2, RoundingMode.UP)
 
 fun money(value: Any) = "€%.2f".format(value)
+
+fun menu() : Int {
+
+    val employeeId = 6143
+    val firstName = "Joe"
+    val surname = "Soap"
+
+    print("""
+        Employee Menu for ${firstName.uppercase()} ${surname.uppercase()} ($employeeId)
+        1. Hourly Rate
+        2. Hours Worked
+        3. Overtime Hours
+        4. Bonus
+        5. Tax Rate
+        6. Pension
+        7. Gross Pay
+        8. Net Pay
+        9. Full Payslip
+        -1. Exit
+        Enter Option: """)
+    return readln().toInt()
+}
